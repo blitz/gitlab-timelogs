@@ -27,6 +27,7 @@ SOFTWARE.
 //! [`fetch_results`] is the entry point.
 
 use crate::gitlab_api::types::Response;
+use anyhow::Context;
 use chrono::{DateTime, Local, NaiveDate, NaiveTime};
 use reqwest::blocking::Client;
 use reqwest::header::AUTHORIZATION;
@@ -90,16 +91,14 @@ fn fetch_result(
         .header(AUTHORIZATION, authorization)
         .json(&payload)
         .send()
-        .map_err(anyhow::Error::from)
-        .map_err(|e| e.context("Failed to send request"))?
+        .context("Failed to send request")?
         .error_for_status()
-        .map_err(anyhow::Error::from)
-        .map_err(|e| e.context("Failed to receive proper response"))?;
+        .context("Failed to receive response")?;
 
     plain_response
         .json::<Response>()
+        .context("Failed to parse response body as JSON")
         .map_err(anyhow::Error::from)
-        .map_err(|e| e.context("Failed to parse response body as JSON"))
 }
 
 /// Fetches all results from the API with pagination in mind.

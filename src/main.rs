@@ -69,20 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         cfg.token(),
         cfg.after(),
         cfg.before(),
-    );
-
-    let response = match response {
-        Ok(data) => data,
-        Err(err) => {
-            eprintln!();
-            eprintln!("{}", Color::Red.bold().paint("Error:"));
-
-            for e in err.chain() {
-                eprintln!("  {e}");
-            }
-            std::process::exit(1);
-        }
-    };
+    )?;
 
     // All nodes but as vector to references.
     // Simplifies the handling with other parts of the code, especially the
